@@ -40,15 +40,14 @@ public class pantallaJuegoController {
     @FXML private Circle P2;
     @FXML private Circle P3;
     @FXML private Circle P4;
-    
-    //ONLY FOR TESTING!!!
-    private int p1Position = 0; // Tracks current position (from 0 to 49 in a 5x10 grid)
+
+    // Player positions and turn management
+    private int[] playerPositions = {0, 0, 0, 0}; // Positions for P1, P2, P3, P4
     private final int COLUMNS = 5;
+    private int currentPlayer = 0; // Tracks the current player's turn (0 to 3)
 
     @FXML
     private void initialize() {
-        // This method is called automatically after the FXML is loaded
-        // You can set initial values or add listeners here
         eventos.setText("¡El juego ha comenzado!");
     }
 
@@ -83,47 +82,64 @@ public class pantallaJuegoController {
         Random rand = new Random();
         int diceResult = rand.nextInt(6) + 1;
 
-        // Update the Text 
+        // Update the Text
         dadoResultText.setText("Ha salido: " + diceResult);
 
-        // Update the position
-        moveP1(diceResult);
+        // Move the current player
+        movePlayer(currentPlayer, diceResult);
+
+        // Switch to the next player's turn
+        currentPlayer = (currentPlayer + 1) % 4; // Cycle through players 0 to 3
+        eventos.setText("Turno del jugador " + (currentPlayer + 1));
     }
 
-    private void moveP1(int steps) {
-        p1Position += steps;
+    private void movePlayer(int playerIndex, int steps) {
+        playerPositions[playerIndex] += steps;
 
-        // Bound player
-        if (p1Position >= 50) {
-            p1Position = 49; // 5 columns * 10 rows = 50 cells (index 0 to 49)
+        // Bound player position
+        if (playerPositions[playerIndex] >= 50) {
+            playerPositions[playerIndex] = 49; // Limit to the last cell
         }
 
         // Check row and column
-        int row = p1Position / COLUMNS;
-        int col = p1Position % COLUMNS;
+        int row = playerPositions[playerIndex] / COLUMNS;
+        int col = playerPositions[playerIndex] % COLUMNS;
+
+        // Get the player's Circle
+        Circle playerCircle = getPlayerCircle(playerIndex);
 
         // Get current row and column
-        int currentRow = GridPane.getRowIndex(P1) != null ? GridPane.getRowIndex(P1) : 0;
-        int currentCol = GridPane.getColumnIndex(P1) != null ? GridPane.getColumnIndex(P1) : 0;
+        int currentRow = GridPane.getRowIndex(playerCircle) != null ? GridPane.getRowIndex(playerCircle) : 0;
+        int currentCol = GridPane.getColumnIndex(playerCircle) != null ? GridPane.getColumnIndex(playerCircle) : 0;
 
         // Calculate pixel offsets for animation
         double offsetX = (col - currentCol) * tablero.getWidth() / COLUMNS;
         double offsetY = (row - currentRow) * tablero.getHeight() / (50 / COLUMNS);
 
         // Create a TranslateTransition for smooth movement
-        TranslateTransition transition = new TranslateTransition(Duration.millis(500), P1);
+        TranslateTransition transition = new TranslateTransition(Duration.millis(500), playerCircle);
         transition.setByX(offsetX);
         transition.setByY(offsetY);
 
         // After the animation, update the GridPane position
         transition.setOnFinished(event -> {
-            GridPane.setRowIndex(P1, row);
-            GridPane.setColumnIndex(P1, col);
-            P1.setTranslateX(0); // Reset translation
-            P1.setTranslateY(0);
+            GridPane.setRowIndex(playerCircle, row);
+            GridPane.setColumnIndex(playerCircle, col);
+            playerCircle.setTranslateX(0); // Reset translation
+            playerCircle.setTranslateY(0);
         });
 
         transition.play();
+    }
+
+    private Circle getPlayerCircle(int playerIndex) {
+        switch (playerIndex) {
+            case 0: return P1;
+            case 1: return P2;
+            case 2: return P3;
+            case 3: return P4;
+            default: throw new IllegalArgumentException("Invalid player index: " + playerIndex);
+        }
     }
 
     @FXML
