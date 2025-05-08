@@ -203,7 +203,7 @@
                      <GridPane.margin>
                         <Insets left="120.0" />
                      </GridPane.margin></Circle>
-                  <Arc fill="DODGERBLUE" length="270.0" radiusX="20.0" radiusY="17.0" startAngle="45.0" stroke="BLACK" strokeType="INSIDE" style="-fx-rotate: 180;" type="ROUND" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                  <Arc fx:id="Oso" fill="DODGERBLUE" length="270.0" radiusX="20.0" radiusY="17.0" startAngle="45.0" stroke="BLACK" strokeType="INSIDE" style="-fx-rotate: 180;" type="ROUND" GridPane.columnIndex="1" GridPane.rowIndex="4">
                      <effect>
                         <Glow />
                      </effect>
@@ -320,6 +320,51 @@
                         </LinearGradient>
                      </fill>
                   </Ellipse>
+                  <Text fx:id="Evento" strokeType="OUTSIDE" strokeWidth="0.0" text="?" wrappingWidth="34.13671875" GridPane.rowIndex="1">
+                     <font>
+                        <Font name="System Bold Italic" size="47.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="Evento" strokeType="OUTSIDE" strokeWidth="0.0" text="?" wrappingWidth="34.13671875" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                     <font>
+                        <Font name="System Bold Italic" size="47.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="Evento" strokeType="OUTSIDE" strokeWidth="0.0" text="?" wrappingWidth="34.13671875" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                     <font>
+                        <Font name="System Bold Italic" size="47.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="Evento" strokeType="OUTSIDE" strokeWidth="0.0" text="?" wrappingWidth="34.13671875" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                     <font>
+                        <Font name="System Bold Italic" size="47.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="Evento" strokeType="OUTSIDE" strokeWidth="0.0" text="?" wrappingWidth="34.13671875" GridPane.columnIndex="2" GridPane.rowIndex="6">
+                     <font>
+                        <Font name="System Bold Italic" size="47.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="Evento" strokeType="OUTSIDE" strokeWidth="0.0" text="?" wrappingWidth="34.13671875" GridPane.columnIndex="4">
+                     <font>
+                        <Font name="System Bold Italic" size="47.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="Evento" strokeType="OUTSIDE" strokeWidth="0.0" text="?" wrappingWidth="34.13671875" GridPane.rowIndex="9">
+                     <font>
+                        <Font name="System Bold Italic" size="47.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="Evento" strokeType="OUTSIDE" strokeWidth="0.0" text="?" wrappingWidth="34.13671875" GridPane.columnIndex="2" GridPane.rowIndex="9">
+                     <font>
+                        <Font name="System Bold Italic" size="47.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="Evento" strokeType="OUTSIDE" strokeWidth="0.0" text="?" wrappingWidth="34.13671875" GridPane.columnIndex="2">
+                     <font>
+                        <Font name="System Bold Italic" size="47.0" />
+                     </font>
+                  </Text>
                </children>
             </GridPane>
          </top>
