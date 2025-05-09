@@ -10,6 +10,9 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.animation.TranslateTransition;
 import javafx.util.Duration;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import modelo.Pinguino;
 
 public class pantallaJuegoController {
 
@@ -164,5 +167,39 @@ public class pantallaJuegoController {
     private void handleNieve() {
         System.out.println("Snow.");
         // TODO
+    }
+
+    @FXML
+    private void handleInventario() {
+        // Suponiendo que el jugador actual es un Pinguino
+        Pinguino jugadorActual = obtenerJugadorActual(); // Implementa este método según tu lógica
+        if (jugadorActual != null) {
+            StringBuilder inventarioTexto = new StringBuilder();
+            if (jugadorActual.getInv().getLista().isEmpty()) {
+                inventarioTexto.append("El inventario está vacío.");
+            } else {
+                inventarioTexto.append("Inventario:\n");
+                jugadorActual.getInv().getLista().forEach(item -> {
+                    inventarioTexto.append("- ").append(item.getNombre())
+                            .append(" (Cantidad: ").append(item.getCantidad()).append(")\n");
+                });
+            }
+
+            // Mostrar el inventario en un cuadro de diálogo
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Inventario");
+            alert.setHeaderText("Contenido del Inventario");
+            alert.setContentText(inventarioTexto.toString());
+            alert.showAndWait();
+        } else {
+            System.out.println("No se pudo obtener el jugador actual.");
+        }
+    }
+
+    private Pinguino obtenerJugadorActual() {
+        // Implementa la lógica para obtener el jugador actual
+        // Por ejemplo, si tienes un objeto Tablero que gestiona los turnos:
+        // return (Pinguino) tablero.getJugadorActual();
+        return null; // Cambia esto por la lógica real
     }
 }
