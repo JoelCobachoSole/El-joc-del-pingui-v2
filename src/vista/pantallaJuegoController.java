@@ -1,6 +1,7 @@
 package vista;
 
 import java.util.Random;
+import java.util.ArrayList;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,6 +14,14 @@ import javafx.util.Duration;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import modelo.Pinguino;
+import modelo.Tablero;
+import modelo.Casilla;
+import modelo.Oso;
+import modelo.Agujero;
+import modelo.Trineo;
+import modelo.Evento;
+import modelo.CasillaNormal;
+import modelo.Inventario;
 
 public class pantallaJuegoController {
 
@@ -49,9 +58,18 @@ public class pantallaJuegoController {
     private final int COLUMNS = 5;
     private int currentPlayer = 0; // Tracks the current player's turn (0 to 3)
 
+    private Tablero tableroLogico;
+
     @FXML
     private void initialize() {
         eventos.setText("¡El juego ha comenzado!");
+
+        ArrayList<modelo.Jugador> jugadores = new ArrayList<>();
+        jugadores.add(new Pinguino(0, "Jugador1", "Azul", new Inventario()));
+
+        tableroLogico = crearTableroAleatorio(jugadores);
+
+        mostrarTablero();
     }
 
     // Button and menu actions
@@ -201,5 +219,81 @@ public class pantallaJuegoController {
         // Por ejemplo, si tienes un objeto Tablero que gestiona los turnos:
         // return (Pinguino) tablero.getJugadorActual();
         return null; // Cambia esto por la lógica real
+    }
+
+    private void mostrarTablero() {
+        tablero.getChildren().removeIf(node -> node instanceof Label); // Limpia solo los labels previos
+        int columnas = 5;
+        for (int i = 0; i < 50; i++) {
+            Casilla casilla = tableroLogico.getCasillas().get(i);
+            int row = i / columnas;
+            int col = i % columnas;
+
+            String texto = "";
+            if (casilla instanceof Oso) {
+                texto = "Oso";
+            } else if (casilla instanceof Agujero) {
+                texto = "Agujero";
+            } else if (casilla instanceof Trineo) {
+                texto = "Trineo";
+            } else if (casilla instanceof Evento) {
+                texto = "Evento";
+            }
+
+            if (!texto.isEmpty()) {
+                Label label = new Label(texto);
+                tablero.add(label, col, row);
+            }
+        }
+    }
+
+    private Tablero crearTableroAleatorio(ArrayList<modelo.Jugador> jugadores) {
+        int totalCasillas = 50;
+        ArrayList<modelo.Casilla> casillas = new ArrayList<>(totalCasillas);
+        for (int i = 0; i < totalCasillas; i++) casillas.add(null);
+
+        java.util.Random rand = new java.util.Random();
+        java.util.HashSet<Integer> posicionesUsadas = new java.util.HashSet<>();
+
+        // Helper para obtener posiciones únicas (evita la 0 y la 49)
+        java.util.function.IntSupplier getLibre = () -> {
+            int pos;
+            do {
+                pos = rand.nextInt(totalCasillas);
+            } while (posicionesUsadas.contains(pos) || pos == 0 || pos == 49);
+            posicionesUsadas.add(pos);
+            return pos;
+        };
+
+        // 2 Osos
+        for (int i = 0; i < 2; i++) {
+            int pos = getLibre.getAsInt();
+            casillas.set(pos, new Oso(pos, new ArrayList<>()));
+        }
+        // 7 Agujeros
+        for (int i = 0; i < 7; i++) {
+            int pos = getLibre.getAsInt();
+            casillas.set(pos, new Agujero(pos, new ArrayList<>()));
+        }
+        // 4 Trineos
+        for (int i = 0; i < 4; i++) {
+            int pos = getLibre.getAsInt();
+            casillas.set(pos, new Trineo(pos, new ArrayList<>()));
+        }
+        // 8 Eventos
+        for (int i = 0; i < 8; i++) {
+            int pos = getLibre.getAsInt();
+            casillas.set(pos, new Evento(pos, new ArrayList<>(), "aleatorio"));
+        }
+        // El resto normales
+        for (int i = 0; i < totalCasillas; i++) {
+            if (casillas.get(i) == null) {
+                casillas.set(i, new CasillaNormal(i, new ArrayList<>()));
+            }
+        }
+
+        // Puedes poner aquí el jugador actual real si lo necesitas
+        modelo.Jugador jugadorActual = jugadores.get(0);
+        return new Tablero(casillas, jugadores, 0, jugadorActual);
     }
 }
