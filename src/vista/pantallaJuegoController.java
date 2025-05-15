@@ -12,6 +12,7 @@ import javafx.animation.TranslateTransition;
 import javafx.util.Duration;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import modelo.Item;
 import modelo.Pinguino;
 
 public class pantallaJuegoController {
@@ -47,11 +48,33 @@ public class pantallaJuegoController {
     // Player positions and turn management
     private int[] playerPositions = {0, 0, 0, 0}; // Positions for P1, P2, P3, P4
     private final int COLUMNS = 5;
-    private int currentPlayer = 0; // Tracks the current player's turn (0 to 3)
+    private Pinguino[] jugadores = new Pinguino[4]; // 4 jugadores
+    private int currentPlayer = 0; // Jugador actual
+
+    private Pinguino jugadorActual;
 
     @FXML
     private void initialize() {
         eventos.setText("¡El juego ha comenzado!");
+
+        // Inicializar jugadores y sus inventarios
+        for (int i = 0; i < jugadores.length; i++) {
+            jugadores[i] = new Pinguino(0, "Jugador " + (i + 1), "Color" + i, new modelo.Inventario());
+            jugadores[i].getInv().añadirItem(new Item("Dado Normal", 3));
+            jugadores[i].getInv().añadirItem(new Item("Dado Especial", 2));
+            jugadores[i].getInv().añadirItem(new Item("Pez", 2));
+            jugadores[i].getInv().añadirItem(new Item("Bola de Nieve", 6));
+        }
+
+        // Colocar las fichas en la posición inicial
+        GridPane.setRowIndex(P1, 0);
+        GridPane.setColumnIndex(P1, 0);
+        GridPane.setRowIndex(P2, 0);
+        GridPane.setColumnIndex(P2, 0);
+        GridPane.setRowIndex(P3, 0);
+        GridPane.setColumnIndex(P3, 0);
+        GridPane.setRowIndex(P4, 0);
+        GridPane.setColumnIndex(P4, 0);
     }
 
     // Button and menu actions
@@ -82,53 +105,110 @@ public class pantallaJuegoController {
 
     @FXML
     private void handleDado(ActionEvent event) {
-        Random rand = new Random();
-        int diceResult = rand.nextInt(6) + 1;
+        tirarDado();
+    }
 
-        // Update the Text
-        dadoResultText.setText("Ha salido: " + diceResult);
+    private void tirarDado() {
+        // Mostrar un cuadro de diálogo para elegir el tipo de dado
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Tirar dado");
+        alert.setHeaderText("Elige el tipo de dado que quieres tirar:");
+        alert.setContentText("Selecciona una opción:");
 
-        // Move the current player
-        movePlayer(currentPlayer, diceResult);
+        ButtonType buttonNormal = new ButtonType("Dado Normal");
+        ButtonType buttonEspecial = new ButtonType("Dado Especial");
+        ButtonType buttonCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        // Switch to the next player's turn
-        currentPlayer = (currentPlayer + 1) % 4; // Cycle through players 0 to 3
-        eventos.setText("Turno del jugador " + (currentPlayer + 1));
+        alert.getButtonTypes().setAll(buttonNormal, buttonEspecial, buttonCancel);
+
+        // Obtener la elección del jugador
+        ButtonType result = alert.showAndWait().orElse(buttonCancel);
+
+        int resultado;
+        if (result == buttonNormal) {
+            // Tirar dado normal
+            resultado = (int) (Math.random() * 6) + 1; // Dado normal: 1-6
+        } else if (result == buttonEspecial) {
+            // Verificar si el jugador tiene dados especiales
+            if (jugadores[currentPlayer].getInv().contarItemsPorNombre("Dado Especial") > 0) {
+                // Mostrar una lista de los dados especiales disponibles
+                Alert elegirDado = new Alert(Alert.AlertType.CONFIRMATION);
+                elegirDado.setTitle("Elegir Dado Especial");
+                elegirDado.setHeaderText("Selecciona un dado especial para tirar:");
+                elegirDado.setContentText("Selecciona una opción:");
+
+                ButtonType dadoRapido = new ButtonType("Dado Rápido");
+                ButtonType dadoLento = new ButtonType("Dado Lento");
+                ButtonType buttonCancelEspecial = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                elegirDado.getButtonTypes().setAll(dadoRapido, dadoLento, buttonCancelEspecial);
+
+                ButtonType dadoElegido = elegirDado.showAndWait().orElse(buttonCancelEspecial);
+
+                if (dadoElegido == dadoRapido) {
+                    resultado = (int) (Math.random() * 6) + 5; // Dado rápido: 5-10
+                    jugadores[currentPlayer].getInv().quitarItem(new Item("Dado Especial", 1)); // Consumir un dado especial
+                } else if (dadoElegido == dadoLento) {
+                    resultado = (int) (Math.random() * 5) + 1; // Dado lento: 1-5
+                    jugadores[currentPlayer].getInv().quitarItem(new Item("Dado Especial", 1)); // Consumir un dado especial
+                } else {
+                    // Cancelar
+                    return;
+                }
+            } else {
+                mostrarAlerta("Inventario vacío", "No tienes dados especiales disponibles.");
+                return;
+            }
+        } else {
+            // Cancelar
+            return;
+        }
+
+        dadoResultText.setText("Ha salido: " + resultado);
+
+        // Mover al jugador actual
+        movePlayer(currentPlayer, resultado);
+
+        // Cambiar al siguiente jugador
+        currentPlayer = (currentPlayer + 1) % jugadores.length;
     }
 
     private void movePlayer(int playerIndex, int steps) {
         playerPositions[playerIndex] += steps;
 
-        // Bound player position
-        if (playerPositions[playerIndex] >= 50) {
-            playerPositions[playerIndex] = 49; // Limit to the last cell
+        // Limitar la posición del jugador al tamaño del tablero
+        int totalCells = 50; // 5 columnas x 10 filas
+        if (playerPositions[playerIndex] >= totalCells) {
+            playerPositions[playerIndex] = totalCells - 1; // Última celda
         }
 
-        // Check row and column
+        // Calcular la fila y columna en el tablero
         int row = playerPositions[playerIndex] / COLUMNS;
         int col = playerPositions[playerIndex] % COLUMNS;
 
-        // Get the player's Circle
+        // Obtener el círculo del jugador
         Circle playerCircle = getPlayerCircle(playerIndex);
 
-        // Get current row and column
-        int currentRow = GridPane.getRowIndex(playerCircle) != null ? GridPane.getRowIndex(playerCircle) : 0;
-        int currentCol = GridPane.getColumnIndex(playerCircle) != null ? GridPane.getColumnIndex(playerCircle) : 0;
+        // Obtener la fila y columna actuales
+        Integer currentRow = GridPane.getRowIndex(playerCircle);
+        Integer currentCol = GridPane.getColumnIndex(playerCircle);
+        if (currentRow == null) currentRow = 0;
+        if (currentCol == null) currentCol = 0;
 
-        // Calculate pixel offsets for animation
-        double offsetX = (col - currentCol) * tablero.getWidth() / COLUMNS;
-        double offsetY = (row - currentRow) * tablero.getHeight() / (50 / COLUMNS);
+        // Calcular desplazamiento en píxeles
+        double offsetX = (col - currentCol) * (tablero.getWidth() / COLUMNS);
+        double offsetY = (row - currentRow) * (tablero.getHeight() / tablero.getRowConstraints().size());
 
-        // Create a TranslateTransition for smooth movement
+        // Crear una transición para mover al jugador
         TranslateTransition transition = new TranslateTransition(Duration.millis(500), playerCircle);
         transition.setByX(offsetX);
         transition.setByY(offsetY);
 
-        // After the animation, update the GridPane position
+        // Actualizar la posición en el GridPane al finalizar la animación
         transition.setOnFinished(event -> {
             GridPane.setRowIndex(playerCircle, row);
             GridPane.setColumnIndex(playerCircle, col);
-            playerCircle.setTranslateX(0); // Reset translation
+            playerCircle.setTranslateX(0); // Resetear la traslación
             playerCircle.setTranslateY(0);
         });
 
@@ -171,14 +251,14 @@ public class pantallaJuegoController {
 
     @FXML
     private void handleInventario() {
-        // Suponiendo que el jugador actual es un Pinguino
-        Pinguino jugadorActual = obtenerJugadorActual(); // Implementa este método según tu lógica
+        Pinguino jugadorActual = jugadores[currentPlayer];
         if (jugadorActual != null) {
             StringBuilder inventarioTexto = new StringBuilder();
+            inventarioTexto.append("Inventario de ").append(jugadorActual.getNombre()).append(":\n\n");
+
             if (jugadorActual.getInv().getLista().isEmpty()) {
                 inventarioTexto.append("El inventario está vacío.");
             } else {
-                inventarioTexto.append("Inventario:\n");
                 jugadorActual.getInv().getLista().forEach(item -> {
                     inventarioTexto.append("- ").append(item.getNombre())
                             .append(" (Cantidad: ").append(item.getCantidad()).append(")\n");
@@ -196,10 +276,31 @@ public class pantallaJuegoController {
         }
     }
 
-    private Pinguino obtenerJugadorActual() {
-        // Implementa la lógica para obtener el jugador actual
-        // Por ejemplo, si tienes un objeto Tablero que gestiona los turnos:
-        // return (Pinguino) tablero.getJugadorActual();
-        return null; // Cambia esto por la lógica real
+    @FXML
+    private void handleBolaDeNieve(ActionEvent event) {
+        if (jugadorActual.getInv().contarItemsPorNombre("Bola de Nieve") > 0) {
+            eventos.setText("¡Has usado una bola de nieve!");
+            jugadorActual.getInv().quitarItem(new Item("Bola de Nieve", 1));
+        } else {
+            mostrarAlerta("Inventario vacío", "No tienes bolas de nieve disponibles.");
+        }
+    }
+
+    @FXML
+    private void handleSubornarOso(ActionEvent event) {
+        if (jugadorActual.getInv().contarItemsPorNombre("Pez") > 0) {
+            eventos.setText("¡Has subornado al oso!");
+            jugadorActual.getInv().quitarItem(new Item("Pez", 1));
+        } else {
+            mostrarAlerta("Inventario vacío", "No tienes peces para subornar al oso.");
+        }
+    }
+
+    private void mostrarAlerta(String titulo, String mensaje) {
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }

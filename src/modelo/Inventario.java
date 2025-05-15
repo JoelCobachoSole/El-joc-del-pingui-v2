@@ -1,54 +1,70 @@
 package modelo;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Inventario {
-    private ArrayList<Item> lista;
+    private List<Item> items;
 
     public Inventario() {
-        this.lista = new ArrayList<>();
+        this.items = new ArrayList<>();
     }
 
-    public ArrayList<Item> getLista() {
-        return lista;
+    public List<Item> getLista() {
+        return items;
     }
 
-    public void setLista(ArrayList<Item> lista) {
-        this.lista = lista;
+    public void setLista(List<Item> items) {
+        this.items = items;
     }
 
     public void añadirItem(Item item) {
-        if (item == null) {
-            throw new IllegalArgumentException("El item no puede ser null");
+        for (Item i : items) {
+            if (i.getNombre().equals(item.getNombre())) {
+                i.setCantidad(i.getCantidad() + item.getCantidad());
+                return;
+            }
         }
-        if (contieneItem(item.getNombre())) {
-            System.out.println("El item ya está en el inventario.");
-            return;
-        }
-        lista.add(item);
+        items.add(item);
     }
 
     public void quitarItem(Item item) {
-        if (item == null) {
-            throw new IllegalArgumentException("El item no puede ser null");
+        for (Item i : items) {
+            if (i.getNombre().equals(item.getNombre())) {
+                int nuevaCantidad = i.getCantidad() - item.getCantidad();
+                if (nuevaCantidad <= 0) {
+                    items.remove(i);
+                } else {
+                    i.setCantidad(nuevaCantidad);
+                }
+                return;
+            }
         }
-        lista.remove(item);
+    }
+
+    public int contarItemsPorNombre(String nombre) {
+        for (Item i : items) {
+            if (i.getNombre().equals(nombre)) {
+                return i.getCantidad();
+            }
+        }
+        return 0;
     }
 
     public boolean contieneItem(String nombreItem) {
-        return lista.stream().anyMatch(item -> item.getNombre().equalsIgnoreCase(nombreItem));
+        return items.stream().anyMatch(item -> item.getNombre().equalsIgnoreCase(nombreItem));
     }
 
     public int contarItems() {
-        return lista.size();
+        return items.size();
     }
 
     public void mostrarInventario() {
-        if (lista.isEmpty()) {
+        if (items.isEmpty()) {
             System.out.println("El inventario está vacío.");
         } else {
             System.out.println("Inventario:");
-            for (Item item : lista) {
+            for (Item item : items) {
                 System.out.println("- " + item.getNombre() + " (Cantidad: " + item.getCantidad() + ")");
             }
         }
