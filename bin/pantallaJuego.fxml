@@ -78,14 +78,19 @@
                <children>
                   <AnchorPane minHeight="200.0" minWidth="300.0">
                      <children>
-                        <Text fx:id="dadoResultText" strokeType="OUTSIDE" strokeWidth="0.0" text="Ha salido: " AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="30.0">
+                        <Text fx:id="dadoResultText" layoutX="14.0" layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ha salido: " AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="85.46875">
                            <font>
                               <Font size="32.0" />
                            </font>
                         </Text>
-                        <Button fx:id="dado" layoutY="58.0" mnemonicParsing="false" onAction="#handleDado" text="Dado" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="100.0">
+                        <Button fx:id="dado" layoutX="181.0" layoutY="81.0" mnemonicParsing="false" onAction="#handleDado" text="Dado" AnchorPane.leftAnchor="181.0" AnchorPane.topAnchor="81.0">
                            <font>
                               <Font size="25.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="botonInventario" layoutX="87.0" layoutY="14.0" onAction="#handleInventario" text="Inventario" AnchorPane.bottomAnchor="142.66666666666666" AnchorPane.leftAnchor="87.0">
+                           <font>
+                              <Font size="20.0" />
                            </font>
                         </Button>
                      </children>
