@@ -9,9 +9,17 @@ public class Trineo extends Casilla {
 	}
 
 	@Override
-	public void realizarAccion() {
-		// TODO Auto-generated method stub
-
+	public String realizarAccion(Jugador jugador) {
+		int posActual = jugador.getPosicion();
+		if (this.tablero != null) {
+			for (int i = posActual + 1; i < tablero.getCasillas().size(); i++) {
+				if (tablero.getCasillas().get(i) instanceof Trineo) {
+					jugador.setPosicion(i);
+					return "¡Has encontrado un Trineo! Avanzas al siguiente trineo.";
+				}
+			}
+		}
+		return "¡Has encontrado un Trineo! Pero no hay más trineos adelante.";
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public abstract class Casilla {
 	protected int posicion;
 	protected ArrayList<Jugador> jugadoresActuales;
+    protected Tablero tablero; // Afegir referència al taulell
 	
 	public Casilla(int posicion, ArrayList<Jugador> jugadoresActuales) {
 		super();
@@ -28,7 +29,7 @@ public abstract class Casilla {
 		this.jugadoresActuales = jugadoresActuales;
 	}
 	
-	public abstract void realizarAccion();
+	public abstract String realizarAccion(Jugador jugador);
 	
 	public void añadirJugador(Jugador j) {
 		this.jugadoresActuales.add(j);
@@ -37,4 +38,11 @@ public abstract class Casilla {
 	public void quitarJugador(Jugador j) {
 		this.jugadoresActuales.remove(j);
 	}
+
+    public void setTablero(Tablero tablero) {
+        this.tablero = tablero;
+    }
+    public Tablero getTablero() {
+        return tablero;
+    }
 }

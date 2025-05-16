@@ -66,6 +66,9 @@ public class pantallaJuegoController {
 
         ArrayList<modelo.Jugador> jugadores = new ArrayList<>();
         jugadores.add(new Pinguino(0, "Jugador1", "Azul", new Inventario()));
+        jugadores.add(new Pinguino(0, "Jugador2", "Rojo", new Inventario()));
+        jugadores.add(new Pinguino(0, "Jugador3", "Verde", new Inventario()));
+        jugadores.add(new Pinguino(0, "Jugador4", "Amarillo", new Inventario()));
 
         tableroLogico = crearTableroAleatorio(jugadores);
 
@@ -109,45 +112,105 @@ public class pantallaJuegoController {
         // Move the current player
         movePlayer(currentPlayer, diceResult);
 
-        // Switch to the next player's turn
+        // Cambia de turno DESPUÉS de mostrar el mensaje
         currentPlayer = (currentPlayer + 1) % 4; // Cycle through players 0 to 3
-        eventos.setText("Turno del jugador " + (currentPlayer + 1));
+        // NO sobreescribas el mensaje aquí
     }
 
     private void movePlayer(int playerIndex, int steps) {
         playerPositions[playerIndex] += steps;
-
-        // Bound player position
         if (playerPositions[playerIndex] >= 50) {
-            playerPositions[playerIndex] = 49; // Limit to the last cell
+            playerPositions[playerIndex] = 49;
         }
 
-        // Check row and column
-        int row = playerPositions[playerIndex] / COLUMNS;
-        int col = playerPositions[playerIndex] % COLUMNS;
+        modelo.Jugador jugador = tableroLogico.getJugadores().get(playerIndex);
+        jugador.setPosicion(playerPositions[playerIndex]);
 
-        // Get the player's Circle
+        int nuevaPos = playerPositions[playerIndex];
+        modelo.Casilla casilla = tableroLogico.getCasillas().get(nuevaPos);
+
+        // Animación inicial: mueve al jugador a la casilla donde ha caído
+        int row = nuevaPos / COLUMNS;
+        int col = nuevaPos % COLUMNS;
         Circle playerCircle = getPlayerCircle(playerIndex);
-
-        // Get current row and column
         int currentRow = GridPane.getRowIndex(playerCircle) != null ? GridPane.getRowIndex(playerCircle) : 0;
         int currentCol = GridPane.getColumnIndex(playerCircle) != null ? GridPane.getColumnIndex(playerCircle) : 0;
-
-        // Calculate pixel offsets for animation
         double offsetX = (col - currentCol) * tablero.getWidth() / COLUMNS;
         double offsetY = (row - currentRow) * tablero.getHeight() / (50 / COLUMNS);
 
-        // Create a TranslateTransition for smooth movement
         TranslateTransition transition = new TranslateTransition(Duration.millis(500), playerCircle);
         transition.setByX(offsetX);
         transition.setByY(offsetY);
 
-        // After the animation, update the GridPane position
         transition.setOnFinished(event -> {
             GridPane.setRowIndex(playerCircle, row);
             GridPane.setColumnIndex(playerCircle, col);
-            playerCircle.setTranslateX(0); // Reset translation
+            playerCircle.setTranslateX(0);
             playerCircle.setTranslateY(0);
+
+            // Espera 1 segundo y luego realiza la acción especial si corresponde
+            javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(Duration.seconds(1));
+            pause.setOnFinished(e -> {
+                String mensaje = "";
+                String consola = "";
+                int posAntes = jugador.getPosicion();
+
+                if (casilla instanceof modelo.Oso) {
+                    mensaje = ((modelo.Oso) casilla).realizarAccion(jugador);
+                    consola = jugador.getNombre() + " ha caído en un oso y es devuelto al inicio.";
+                } else if (casilla instanceof modelo.Agujero) {
+                    int posAnterior = jugador.getPosicion();
+                    mensaje = ((modelo.Agujero) casilla).realizarAccion(jugador);
+                    if (jugador.getPosicion() != posAnterior) {
+                        consola = jugador.getNombre() + " ha caído en un agujero y retrocede a la casilla " + jugador.getPosicion() + ".";
+                    } else {
+                        consola = jugador.getNombre() + " ha caído en un agujero pero no hay agujero anterior.";
+                    }
+                } else if (casilla instanceof modelo.Trineo) {
+                    int posAnterior = jugador.getPosicion();
+                    mensaje = ((modelo.Trineo) casilla).realizarAccion(jugador);
+                    if (jugador.getPosicion() != posAnterior) {
+                        consola = jugador.getNombre() + " ha caído en un trineo y avanza a la casilla " + jugador.getPosicion() + ".";
+                    } else {
+                        consola = jugador.getNombre() + " ha caído en un trineo pero no hay más trineos adelante.";
+                    }
+                } else if (casilla instanceof modelo.Evento) {
+                    mensaje = ((modelo.Evento) casilla).realizarAccion(jugador);
+                    consola = jugador.getNombre() + " ha caído en un evento: " + mensaje.replace("¡Evento activado: ", "").replace("!", "") + ".";
+                }
+
+                // Solo imprime si es casilla especial
+                if (!consola.isEmpty()) {
+                    System.out.println(consola);
+                }
+                // Solo muestra mensaje si es especial
+                if (!mensaje.isEmpty()) {
+                    eventos.setText(mensaje);
+                }
+
+                // Si la acción especial cambia la posición, anima de nuevo
+                int finalPos = jugador.getPosicion();
+                if (finalPos != nuevaPos) {
+                    int finalRow = finalPos / COLUMNS;
+                    int finalCol = finalPos % COLUMNS;
+                    double finalOffsetX = (finalCol - col) * tablero.getWidth() / COLUMNS;
+                    double finalOffsetY = (finalRow - row) * tablero.getHeight() / (50 / COLUMNS);
+
+                    TranslateTransition specialTransition = new TranslateTransition(Duration.millis(500), playerCircle);
+                    specialTransition.setByX(finalOffsetX);
+                    specialTransition.setByY(finalOffsetY);
+                    specialTransition.setOnFinished(ev -> {
+                        GridPane.setRowIndex(playerCircle, finalRow);
+                        GridPane.setColumnIndex(playerCircle, finalCol);
+                        playerCircle.setTranslateX(0);
+                        playerCircle.setTranslateY(0);
+                    });
+                    specialTransition.play();
+                }
+                // Actualiza la posición lógica del jugador
+                playerPositions[playerIndex] = jugador.getPosicion();
+            });
+            pause.play();
         });
 
         transition.play();
@@ -294,6 +357,11 @@ public class pantallaJuegoController {
 
         // Puedes poner aquí el jugador actual real si lo necesitas
         modelo.Jugador jugadorActual = jugadores.get(0);
-        return new Tablero(casillas, jugadores, 0, jugadorActual);
+        Tablero tablero = new Tablero(casillas, jugadores, 0, jugadores.get(0));
+        // Assignar el taulell a cada casella
+        for (modelo.Casilla c : casillas) {
+            c.setTablero(tablero);
+        }
+        return tablero;
     }
 }

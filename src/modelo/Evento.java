@@ -11,29 +11,12 @@ public class Evento extends Casilla {
 	}
 
 	@Override
-	public void realizarAccion() {
-		for (Jugador j : jugadoresActuales) {
-			if (j instanceof Pinguino) {
-				Random ran = new Random();
-				int pos = ran.nextInt(6);
-
-				if (eventos[pos].equals("pez")) {
-
-				} else if (eventos[pos].equals("bolas")) {
-
-				} else if (eventos[pos].equals("rapido")) {
-
-				} else if (eventos[pos].equals("lento")) {
-
-				} else if (eventos[pos].equals("pierdeTurno")) {
-
-				} else if (eventos[pos].equals("pierdeItem")) {
-
-				} else if (eventos[pos].equals("motos")) {
-
-				}
-			}
-		}
+	public String realizarAccion(Jugador jugador) {
+	    Random ran = new Random();
+	    int pos = ran.nextInt(eventos.length);
+	    String evento = eventos[pos];
+	    // Aquí puedes poner efectos reales si quieres
+	    return "¡Evento activado: " + evento + "!";
 	}
 
 }

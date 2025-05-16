@@ -9,12 +9,9 @@ public class Oso extends Casilla {
 	}
 
 	@Override
-	public void realizarAccion() {
-		for (Jugador j : this.jugadoresActuales) {
-			if (j instanceof Pinguino) {
-				j.moverPosicion(0);
-			}
-		}
+	public String realizarAccion(Jugador jugador) {
+		jugador.setPosicion(0);
+		return "¡Has caído en un Oso! Vuelves al inicio.";
 	}
 
 }

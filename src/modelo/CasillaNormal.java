@@ -8,7 +8,8 @@ public class CasillaNormal extends Casilla {
     }
 
     @Override
-    public void realizarAccion() {
+    public String realizarAccion(Jugador jugador) {
         // No ocurre nada especial en una casilla normal
+        return "Casilla normal.";
     }
 }
