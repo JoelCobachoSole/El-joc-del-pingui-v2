@@ -60,7 +60,6 @@ public class pantallaPrincipalController {
 
                 pantallaJuegoController controller = loader.getController();
                 controller.setJugador(jugadorActual);
-                controller.setTurno(0); // Si aplica
 
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(root));
@@ -122,7 +121,6 @@ public class pantallaPrincipalController {
             pantallaJuegoController controller = loader.getController();
             controller.setJugador(jugadorActual);
             controller.setTablero(tableroNuevo);
-            controller.setTurno(0);
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));

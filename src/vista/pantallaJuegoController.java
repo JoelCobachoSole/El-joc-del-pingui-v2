@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.util.Duration;
 import javafx.scene.control.Alert.AlertType;
 import modelo.Item;
@@ -70,7 +71,6 @@ public class pantallaJuegoController {
 
     private Tablero tableroLogico;
     private JugadorDB jugador;
-    private int turnoActual = 0;
 
     public void setJugador(JugadorDB jugador) {
         this.jugador = jugador;
@@ -82,33 +82,6 @@ public class pantallaJuegoController {
             System.out.println("Jugador recibido: " + jugador.getNombre());
             // Ejemplo: si tienes un label en pantalla
             nombreJugadorLabel.setText("Jugador: " + jugador.getNombre());
-        }
-    }
-
-    private void guardarPartida() {
-    
-        EstadoJuego estado = new EstadoJuego(jugador, tableroLogico, turnoActual);
-
-        String ruta = "partidas/" + jugador.getNombre() + ".bin";
-        PartidaManager.guardarPartida(estado, ruta);
-    }
-
-    private void cargarPartida() {
-        String ruta = "partidas/" + jugador.getNombre() + ".bin";
-        EstadoJuego estado = PartidaManager.cargarPartida(ruta);
-
-        if (estado != null) {
-
-            this.jugador = estado.getJugador();
-            this.tableroLogico = estado.getTablero();
-            this.turnoActual = estado.getTurnoActual();
-
-            System.out.println("Partida cargada para " + jugador.getNombre());
-
-            // Puedes reconfigurar visualmente el tablero aquí si hace falta
-            inicializarJugadorEnPantalla();
-        } else {
-            System.out.println("No se pudo cargar la partida.");
         }
     }
 
@@ -199,38 +172,31 @@ public class pantallaJuegoController {
 
     @FXML
     private void handleNewGame() {
-        
-        System.out.println("New game.");
-   
+        System.out.println("Nueva partida iniciada");
+        eventos.setText("Nueva partida iniciada");
+        // Aquí va la lógica para reiniciar el juego si quieres
     }
 
     @FXML
     private void handleSaveGame() {
-        guardarPartida();
-        System.out.println("Saved game.");
-
+        System.out.println("Partida guardada");
+        eventos.setText("Partida guardada");
+        // Aquí puedes llamar a un método que guarde los datos en la base
     }
 
     @FXML
     private void handleLoadGame() {
-        cargarPartida();
-        System.out.println("Loaded game.");
+        System.out.println("Partida cargada");
+        eventos.setText("Partida cargada");
+        // Aquí puedes implementar la lógica de recuperación de partida
     }
 
     @FXML
     private void handleQuitGame() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Salir del juego");
-        alert.setHeaderText("¿Estás seguro de que quieres salir?");
-        alert.setContentText("Se guardará automáticamente tu partida.");
+        System.out.println("Saliendo del juego...");
+        Platform.exit(); // Esto cierra la aplicación
+    }
 
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                guardarPartida();
-                System.exit(0);
-            }
-        });
-        }
 
     @FXML
     private void handleDado(ActionEvent event) {
@@ -522,10 +488,6 @@ public class pantallaJuegoController {
     public void setTablero(Tablero tablero) {
         this.tableroLogico = tablero;
         mostrarCasillasEspeciales();
-    }
-
-    public void setTurno(int turno) {
-        this.turnoActual = turno;
     }
 
 }
