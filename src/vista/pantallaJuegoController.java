@@ -40,6 +40,9 @@ public class pantallaJuegoController {
     @FXML private Button lento;
     @FXML private Button peces;
     @FXML private Button nieve;
+    @FXML private Button botonInventario;
+    @FXML private Button bolaDeNieve;
+    @FXML private Button subornarOso;
 
     // Texts
     @FXML private Text dadoResultText;
@@ -181,6 +184,15 @@ public class pantallaJuegoController {
                 tablero.getChildren().add(t);
             }
         }
+
+        Text finishText = new Text("FINISH");
+        finishText.setFill(Color.RED);
+        finishText.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
+        int row = 49 / COLUMNS;
+        int col = 49 % COLUMNS;
+        GridPane.setRowIndex(finishText, row);
+        GridPane.setColumnIndex(finishText, col);
+        tablero.getChildren().add(finishText);
     }
 
     // Button and menu actions
@@ -300,15 +312,39 @@ public class pantallaJuegoController {
         }
 
         // --- EFECTOS DE CASILLAS ESPECIALES ---
-        Casilla casilla = tableroLogico.getCasillas().get(playerPositions[playerIndex]);
         Pinguino jugador = jugadores[playerIndex];
+        int posicion = playerPositions[playerIndex];
+
+        // Si el jugador ha llegado al final
+        if (posicion == totalCells - 1) {
+            eventos.setText("¡" + jugador.getNombre() + " ha ganado la partida!");
+
+            Alert alertaVictoria = new Alert(Alert.AlertType.INFORMATION);
+            alertaVictoria.setTitle("¡Victoria!");
+            alertaVictoria.setHeaderText("Juego finalizado");
+            alertaVictoria.setContentText("¡" + jugador.getNombre() + " ha llegado a la casilla 50 y ha ganado!");
+            alertaVictoria.showAndWait();
+
+            // Desactivamos botones del tablero
+            dado.setDisable(true);
+            rapido.setDisable(true);
+            lento.setDisable(true);
+            peces.setDisable(true);
+            nieve.setDisable(true);
+            botonInventario.setDisable(true);
+            bolaDeNieve.setDisable(true);
+            subornarOso.setDisable(true);
+
+            return;
+        }
+
+        Casilla casilla = tableroLogico.getCasillas().get(posicion);
 
         if (casilla instanceof Oso) {
             eventos.setText("¡" + jugador.getNombre() + " ha sido atacado por el oso y vuelve al inicio!");
             playerPositions[playerIndex] = 0;
         } else if (casilla instanceof Agujero) {
-            // Buscar el agujero anterior
-            int posActual = playerPositions[playerIndex];
+            int posActual = posicion;
             int posForatAnterior = 0;
             for (int i = posActual - 1; i >= 0; i--) {
                 if (tableroLogico.getCasillas().get(i) instanceof Agujero) {
