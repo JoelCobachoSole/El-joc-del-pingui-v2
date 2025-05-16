@@ -1,30 +1,22 @@
 package modelo;
 
-public class Foca extends Jugador {
-	private boolean soborno;
-	
-	public Foca(int posicion, String nombre, String color, boolean soborno) {
-		super(posicion, nombre, color);
-		this.soborno = soborno;
-	}
+import java.io.Serializable;
+import java.util.ArrayList;
 
-	public boolean isSoborno() {
-		return soborno;
-	}
+public class Foca extends Casilla implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-	public void setSoborno(boolean soborno) {
-		this.soborno = soborno;
-	}
-	
-	public void aplastarJugador(Pinguino p) {
-		
-	}
-	
-	public void golpearJugador(Pinguino p) {
-		
-	}
+    public Foca(int posicion, ArrayList<Jugador> jugadoresActuales) {
+        super(posicion, jugadoresActuales);
+    }
 
-	public void esSobornado() {
-		
-	}
+    @Override
+    public void realizarAccion() {
+        for (Jugador j : jugadoresActuales) {
+            int nuevaPos = j.getPosicion() + 1;
+            if (nuevaPos < j.getTablero().getCasillas().size()) {
+                j.setPosicion(nuevaPos);
+            }
+        }
+    }
 }

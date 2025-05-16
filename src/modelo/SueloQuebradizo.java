@@ -12,11 +12,11 @@ public class SueloQuebradizo extends Casilla {
 	public void realizarAccion() {
 		for(Jugador j : jugadoresActuales) {
 			if(j instanceof Pinguino) {
-				if(((Pinguino) j).getInv().getLista().size() == 0) {
+				if(((Pinguino) j).getInv().getItems().size() == 0) {
 					
-				} else if(((Pinguino) j).getInv().getLista().size() > 0 && ((Pinguino) j).getInv().getLista().size() < 5 ) {
+				} else if(((Pinguino) j).getInv().getItems().size() > 0 && ((Pinguino) j).getInv().getItems().size() < 5 ) {
 					
-				} else if(((Pinguino) j).getInv().getLista().size() > 5) {
+				} else if(((Pinguino) j).getInv().getItems().size() > 5) {
 					
 				}
 			}
