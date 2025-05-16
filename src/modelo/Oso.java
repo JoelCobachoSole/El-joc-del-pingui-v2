@@ -11,9 +11,7 @@ public class Oso extends Casilla {
 	@Override
 	public void realizarAccion() {
 		for (Jugador j : this.jugadoresActuales) {
-			if (j instanceof Pinguino) {
-				j.moverPosicion(0);
-			}
+			j.setPosicion(0); // Vuelve al inicio
 		}
 	}
 

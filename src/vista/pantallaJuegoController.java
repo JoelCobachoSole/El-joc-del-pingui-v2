@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.animation.TranslateTransition;
@@ -14,6 +15,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import modelo.Item;
 import modelo.Pinguino;
+import modelo.Tablero;
+import modelo.Casilla;
+import modelo.Agujero;
+import modelo.Trineo;
+import modelo.Oso;
+import modelo.Evento;
+import modelo.CasillaNormal;
 
 public class pantallaJuegoController {
 
@@ -52,11 +60,16 @@ public class pantallaJuegoController {
     private int currentPlayer = 0; // Jugador actual
 
     private Pinguino jugadorActual;
+    private Tablero tableroLogico;
 
     @FXML
     private void initialize() {
         eventos.setText("¡El juego ha comenzado!");
-
+        // Inicializar tablero lógico y jugadores
+        tableroLogico = new Tablero(new java.util.ArrayList<>(), new java.util.ArrayList<>(), 0, null);
+        tableroLogico.generarTablero();
+        // Mostrar casillas especiales en el tablero visual
+        mostrarCasillasEspeciales();
         // Inicializar jugadores y sus inventarios
         for (int i = 0; i < jugadores.length; i++) {
             jugadores[i] = new Pinguino(0, "Jugador " + (i + 1), "Color" + i, new modelo.Inventario());
@@ -64,8 +77,9 @@ public class pantallaJuegoController {
             jugadores[i].getInv().añadirItem(new Item("Dado Especial", 2));
             jugadores[i].getInv().añadirItem(new Item("Pez", 2));
             jugadores[i].getInv().añadirItem(new Item("Bola de Nieve", 6));
+            jugadores[i].setTablero(tableroLogico);
+            tableroLogico.getJugadores().add(jugadores[i]);
         }
-
         // Colocar las fichas en la posición inicial
         GridPane.setRowIndex(P1, 0);
         GridPane.setColumnIndex(P1, 0);
@@ -75,6 +89,44 @@ public class pantallaJuegoController {
         GridPane.setColumnIndex(P3, 0);
         GridPane.setRowIndex(P4, 0);
         GridPane.setColumnIndex(P4, 0);
+    }
+
+    private void mostrarCasillasEspeciales() {
+        tablero.getChildren().removeIf(node -> node instanceof Text); // Limpia textos previos
+
+        // Mostrar "START" en la primera casilla (posición 0)
+        Text startText = new Text("START");
+        startText.setFill(Color.GREEN);
+        startText.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
+        GridPane.setRowIndex(startText, 0);
+        GridPane.setColumnIndex(startText, 0);
+        tablero.getChildren().add(startText);
+
+        // Mostrar el resto de casillas especiales
+        for (int i = 1; i < tableroLogico.getCasillas().size(); i++) {
+            Casilla casilla = tableroLogico.getCasillas().get(i);
+            Text t = null;
+            if (casilla instanceof Oso) {
+                t = new Text("O");
+                t.setFill(Color.BROWN);
+            } else if (casilla instanceof Agujero) {
+                t = new Text("A");
+                t.setFill(Color.DARKBLUE);
+            } else if (casilla instanceof Trineo) {
+                t = new Text("T");
+                t.setFill(Color.DARKRED);
+            } else if (casilla instanceof Evento) {
+                t = new Text("?");
+                t.setFill(Color.ORANGE);
+            }
+            if (t != null) {
+                int row = i / COLUMNS;
+                int col = i % COLUMNS;
+                GridPane.setRowIndex(t, row);
+                GridPane.setColumnIndex(t, col);
+                tablero.getChildren().add(t);
+            }
+        }
     }
 
     // Button and menu actions
@@ -177,9 +229,67 @@ public class pantallaJuegoController {
         playerPositions[playerIndex] += steps;
 
         // Limitar la posición del jugador al tamaño del tablero
-        int totalCells = 50; // 5 columnas x 10 filas
+        int totalCells = 50;
         if (playerPositions[playerIndex] >= totalCells) {
-            playerPositions[playerIndex] = totalCells - 1; // Última celda
+            playerPositions[playerIndex] = totalCells - 1;
+        }
+
+        // --- EFECTOS DE CASILLAS ESPECIALES ---
+        Casilla casilla = tableroLogico.getCasillas().get(playerPositions[playerIndex]);
+        Pinguino jugador = jugadores[playerIndex];
+
+        if (casilla instanceof Oso) {
+            eventos.setText("¡" + jugador.getNombre() + " ha sido atacado por el oso y vuelve al inicio!");
+            playerPositions[playerIndex] = 0;
+        } else if (casilla instanceof Agujero) {
+            // Buscar el agujero anterior
+            int posActual = playerPositions[playerIndex];
+            int posForatAnterior = 0;
+            for (int i = posActual - 1; i >= 0; i--) {
+                if (tableroLogico.getCasillas().get(i) instanceof Agujero) {
+                    posForatAnterior = i;
+                    break;
+                }
+            }
+            eventos.setText("¡" + jugador.getNombre() + " ha caído en un agujero y retrocede al anterior!");
+            playerPositions[playerIndex] = posForatAnterior;
+        } else if (casilla instanceof Trineo) {
+            // Buscar el siguiente trineo
+            int posActual = playerPositions[playerIndex];
+            int posSeguentTrineo = -1;
+            for (int i = posActual + 1; i < totalCells; i++) {
+                if (tableroLogico.getCasillas().get(i) instanceof Trineo) {
+                    posSeguentTrineo = i;
+                    break;
+                }
+            }
+            if (posSeguentTrineo == -1) {
+                // Si no hay siguiente, no se mueve
+                eventos.setText("¡" + jugador.getNombre() + " está en el último trineo!");
+            } else {
+                eventos.setText("¡" + jugador.getNombre() + " avanza al siguiente trineo!");
+                playerPositions[playerIndex] = posSeguentTrineo;
+            }
+        } else if (casilla instanceof Evento) {
+            // Evento aleatorio simple de ejemplo
+            String[] eventosPosibles = {
+                "¡Avanzas 2 casillas extra!",
+                "¡Retrocedes 2 casillas!",
+                "¡Pierdes un turno!",
+                "¡Ganas un pez!"
+            };
+            int idx = new Random().nextInt(eventosPosibles.length);
+            eventos.setText("Casilla de evento: " + eventosPosibles[idx]);
+            // Ejemplo de efecto real:
+            if (idx == 0) { // Avanza 2
+                playerPositions[playerIndex] = Math.min(playerPositions[playerIndex] + 2, totalCells - 1);
+            } else if (idx == 1) { // Retrocede 2
+                playerPositions[playerIndex] = Math.max(playerPositions[playerIndex] - 2, 0);
+            } else if (idx == 2) { // Pierde turno (puedes implementar una bandera para saltar turno)
+                // Implementa lógica de perder turno si lo deseas
+            } else if (idx == 3) { // Gana un pez
+                jugador.getInv().añadirItem(new Item("Pez", 1));
+            }
         }
 
         // Calcular la fila y columna en el tablero
@@ -208,7 +318,7 @@ public class pantallaJuegoController {
         transition.setOnFinished(event -> {
             GridPane.setRowIndex(playerCircle, row);
             GridPane.setColumnIndex(playerCircle, col);
-            playerCircle.setTranslateX(0); // Resetear la traslación
+            playerCircle.setTranslateX(0);
             playerCircle.setTranslateY(0);
         });
 
@@ -278,9 +388,10 @@ public class pantallaJuegoController {
 
     @FXML
     private void handleBolaDeNieve(ActionEvent event) {
-        if (jugadorActual.getInv().contarItemsPorNombre("Bola de Nieve") > 0) {
+        Pinguino jugador = jugadores[currentPlayer];
+        if (jugador.getInv().contarItemsPorNombre("Bola de Nieve") > 0) {
             eventos.setText("¡Has usado una bola de nieve!");
-            jugadorActual.getInv().quitarItem(new Item("Bola de Nieve", 1));
+            jugador.getInv().quitarItem(new Item("Bola de Nieve", 1));
         } else {
             mostrarAlerta("Inventario vacío", "No tienes bolas de nieve disponibles.");
         }

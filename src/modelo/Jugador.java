@@ -4,6 +4,7 @@ public abstract class Jugador {
 	private int posicion;
 	private String nombre;
 	private String color;
+	private Tablero tablero;
 	
 	public Jugador(int posicion, String nombre, String color) {
 		super();
@@ -29,6 +30,13 @@ public abstract class Jugador {
 	}
 	public void setColor(String color) {
 		this.color = color;
+	}
+	public Tablero getTablero() {
+		return tablero;
+	}
+
+	public void setTablero(Tablero tablero) {
+		this.tablero = tablero;
 	}
 	
 	public void tirarDado(int maximoDado) {

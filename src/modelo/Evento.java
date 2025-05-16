@@ -15,23 +15,11 @@ public class Evento extends Casilla {
 		for (Jugador j : jugadoresActuales) {
 			if (j instanceof Pinguino) {
 				Random ran = new Random();
-				int pos = ran.nextInt(6);
-
-				if (eventos[pos].equals("pez")) {
-
-				} else if (eventos[pos].equals("bolas")) {
-
-				} else if (eventos[pos].equals("rapido")) {
-
-				} else if (eventos[pos].equals("lento")) {
-
-				} else if (eventos[pos].equals("pierdeTurno")) {
-
-				} else if (eventos[pos].equals("pierdeItem")) {
-
-				} else if (eventos[pos].equals("motos")) {
-
-				}
+				int pos = ran.nextInt(eventos.length);
+				String evento = eventos[pos];
+				// Aquí puedes implementar la lógica de cada evento
+				// Por ejemplo, mostrar un mensaje o modificar el inventario
+				// Ejemplo: System.out.println("Evento activado: " + evento);
 			}
 		}
 	}

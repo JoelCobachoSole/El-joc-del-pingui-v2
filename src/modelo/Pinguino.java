@@ -39,4 +39,8 @@ public class Pinguino extends Jugador {
         }
         return false;
     }
+    
+    public void actualizarPosicion(int[] playerPositions, int playerIndex) {
+        this.setPosicion(playerPositions[playerIndex]);
+    }
 }
