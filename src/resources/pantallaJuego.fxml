@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
@@ -23,9 +34,6 @@
         </Menu>
       </menus>
     </MenuBar>
-
-    <!-- ✅ NUEVO: Label para mostrar el nombre del jugador -->
-    <Label fx:id="nombreJugadorLabel" text="Jugador: " style="-fx-font-size: 18px; -fx-padding: 10;" />
 
     <BorderPane>
       <top>
@@ -56,10 +64,10 @@
             <Text text="Finish" GridPane.columnIndex="4" GridPane.rowIndex="9">
               <font><Font size="30.0" /></font>
             </Text>
-            <Circle fx:id="P1" fill="BLUE" radius="15.0" stroke="BLACK" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-            <Circle fx:id="P2" fill="RED" radius="15.0" stroke="BLACK" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-            <Circle fx:id="P3" fill="GREEN" radius="15.0" stroke="BLACK" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-            <Circle fx:id="P4" fill="YELLOW" radius="15.0" stroke="BLACK" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+            <Circle fx:id="P1" fill="BLUE" radius="15.0" stroke="BLACK" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <Circle fx:id="P2" fill="RED" radius="15.0" stroke="BLACK" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            <Circle fx:id="P3" fill="GREEN" radius="15.0" stroke="BLACK" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+            <Circle fx:id="P4" fill="YELLOW" radius="15.0" stroke="BLACK" GridPane.columnIndex="3" GridPane.rowIndex="0" />
           </children>
         </GridPane>
       </top>
@@ -69,11 +77,12 @@
           <children>
             <AnchorPane minHeight="200.0" minWidth="300.0">
               <children>
-                <Text fx:id="dadoResultText" layoutX="14.0" layoutY="120.0" text="Ha salido: " />
-                <Button fx:id="dado" layoutX="181.0" layoutY="81.0" onAction="#handleDado" text="Dado" />
-                <Button fx:id="botonInventario" layoutX="87.0" layoutY="14.0" onAction="#handleInventario" text="Inventario" />
-                <Button fx:id="bolaDeNieve" layoutX="200.0" layoutY="150.0" onAction="#handleBolaDeNieve" text="Usar Bola de Nieve" />
-                <Button fx:id="subornarOso" layoutX="200.0" layoutY="200.0" onAction="#handleSubornarOso" text="Subornar Oso" />
+                <Text fx:id="dadoResultText" layoutX="14.0" layoutY="69.0" text="Ha salido: ">
+                           <font>
+                              <Font size="30.0" />
+                           </font></Text>
+              <Text fx:id="rapido_t" layoutX="-5.0" layoutY="212.0" opacity="0.0" text="Dado rápido: 0" />
+                <Button fx:id="dado" layoutX="15.0" layoutY="125.0" onAction="#handleDado" prefHeight="74.0" prefWidth="278.0" text="Dado" />
               </children>
             </AnchorPane>
 
@@ -81,14 +90,12 @@
               <content>
                 <AnchorPane>
                   <children>
-                    <Text fx:id="rapido_t" text="Dado rápido: 0" layoutX="10.0" layoutY="30.0" />
-                    <Text fx:id="lento_t" text="Dado lento: 0" layoutX="250.0" layoutY="30.0" />
-                    <Text fx:id="peces_t" text="Peces: 0" layoutX="500.0" layoutY="30.0" />
-                    <Text fx:id="nieve_t" text="Bolas de nieve: 0" layoutX="750.0" layoutY="30.0" />
-                    <Button fx:id="rapido" text="Usar" layoutX="55.0" layoutY="90.0" />
-                    <Button fx:id="lento" text="Usar" layoutX="290.0" layoutY="90.0" />
-                    <Button fx:id="peces" text="Usar" layoutX="505.0" layoutY="90.0" />
-                    <Button fx:id="nieve" text="Usar" layoutX="810.0" layoutY="90.0" />
+                    <Text fx:id="peces_t" layoutX="500.0" layoutY="30.0" opacity="0.0" text="Peces: 0" />
+                    <Text fx:id="nieve_t" layoutX="750.0" layoutY="30.0" opacity="0.0" text="Bolas de nieve: 0" />
+                    <Button fx:id="nieve" layoutX="810.0" layoutY="90.0" opacity="0.0" text="Usar" />
+                      <Button fx:id="bolaDeNieve" layoutX="404.0" layoutY="25.0" onAction="#handleBolaDeNieve" prefHeight="165.0" prefWidth="235.0" text="Usar Bola de Nieve" />
+                      <Button fx:id="subornarOso" layoutX="218.0" layoutY="18.0" onAction="#handleSubornarOso" prefHeight="187.0" prefWidth="157.0" text="Subornar Oso" />
+                      <Button fx:id="botonInventario" layoutX="24.0" layoutY="25.0" onAction="#handleInventario" prefHeight="176.0" prefWidth="160.0" text="Inventario" />
                   </children>
                 </AnchorPane>
               </content>
@@ -96,12 +103,19 @@
 
             <AnchorPane minHeight="200.0" minWidth="300.0">
               <children>
-                <Text fx:id="eventos" text="Evento ocurrido" layoutX="10.0" layoutY="30.0" />
+                <Text fx:id="eventos" layoutX="10.0" layoutY="30.0" text="Evento ocurrido" />
               </children>
             </AnchorPane>
           </children>
         </HBox>
       </bottom>
     </BorderPane>
+<Text fx:id="lento_t" opacity="0.0" text="Dado lento: 0" />
+
+    <!-- ✅ NUEVO: Label para mostrar el nombre del jugador -->
+    <Label fx:id="nombreJugadorLabel" opacity="0.0" prefHeight="1.0" prefWidth="116.0" style="-fx-font-size: 18px; -fx-padding: 10;" text="Jugador: " />
+<Button fx:id="peces" opacity="0.0" text="Usar" />
+<Button fx:id="lento" opacity="0.0" text="Usar" />
+<Button fx:id="rapido" opacity="0.0" text="Usar" />
   </children>
 </VBox>
