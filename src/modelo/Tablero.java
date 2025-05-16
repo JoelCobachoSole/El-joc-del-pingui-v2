@@ -2,43 +2,11 @@ package modelo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 public class Tablero implements Serializable {
 
-<<<<<<< Updated upstream
-	public ArrayList<Casilla> getCasillas() {
-		return casillas;
-	}
-	public void setCasillas(ArrayList<Casilla> casillas) {
-		this.casillas = casillas;
-	}
-	public ArrayList<Jugador> getJugadores() {
-		return jugadores;
-	}
-	public void setJugadores(ArrayList<Jugador> jugadores) {
-		this.jugadores = jugadores;
-	}
-	public int getTurnos() {
-		return turnos;
-	}
-	public void setTurnos(int turnos) {
-		this.turnos = turnos;
-	}
-	public Jugador getJugadorActual() {
-		return jugadorActual;
-	}
-	public void setJugadorActual(Jugador jugadorActual) {
-		this.jugadorActual = jugadorActual;
-	}
-	
-	public void actualizarTablero() {
-		
-	}
-	
-	public void actualizarJugador(Jugador j) {
-	
-	}
-=======
     private static final long serialVersionUID = 1L;
 
     private ArrayList<Casilla> casillas;
@@ -145,6 +113,4 @@ public class Tablero implements Serializable {
 
         this.casillas = nuevasCasillas;
     }
->>>>>>> Stashed changes
 }
-

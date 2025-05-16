@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class DBManager {
 
-    // URLs de conexi贸n: centro (VPN) y externa (casa)
+    // URLs de conexión: centro (VPN) y externa (casa)
     private static final String[] URLS = {
         "jdbc:oracle:thin:@//oracle.ilerna.com:1521/XEPDB2",
         "jdbc:oracle:thin:@//192.168.3.26:1521/XEPDB2"
@@ -30,10 +30,10 @@ public class DBManager {
         for (String url : URLS) {
             try {
                 connection = DriverManager.getConnection(url, USER, PASSWORD);
-                System.out.println("Conexi贸n exitosa a la base de datos: " + url);
+                System.out.println("Conexión exitosa a la base de datos: " + url);
                 return connection;
             } catch (SQLException e) {
-                System.err.println("鈿狅笍 No se pudo conectar a: " + url);
+                System.err.println("⚠️ No se pudo conectar a: " + url);
                 System.err.println("    Motivo: " + e.getMessage());
             }
         }
@@ -46,10 +46,10 @@ public class DBManager {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
-                System.out.println("馃攲 Conexi贸n cerrada correctamente.");
+                System.out.println("🔌 Conexión cerrada correctamente.");
             }
         } catch (SQLException e) {
-            System.err.println("Error al cerrar la conexi贸n.");
+            System.err.println("Error al cerrar la conexión.");
             e.printStackTrace();
         }
     }

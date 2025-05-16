@@ -7,14 +7,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.animation.TranslateTransition;
 import javafx.util.Duration;
 import javafx.scene.control.Alert.AlertType;
-<<<<<<< Updated upstream
-import modelo.Pinguino;
-=======
 import modelo.Item;
 import modelo.JugadorDB;
 import modelo.Pinguino;
@@ -27,7 +25,6 @@ import modelo.Evento;
 import modelo.CasillaNormal;
 import modelo.EstadoJuego;
 
->>>>>>> Stashed changes
 
 public class pantallaJuegoController {
 
@@ -65,9 +62,6 @@ public class pantallaJuegoController {
     // Player positions and turn management
     private int[] playerPositions = {0, 0, 0, 0}; // Positions for P1, P2, P3, P4
     private final int COLUMNS = 5;
-<<<<<<< Updated upstream
-    private int currentPlayer = 0; // Tracks the current player's turn (0 to 3)
-=======
     private Pinguino[] jugadores = new Pinguino[4]; // 4 jugadores
     private int currentPlayer = 0; // Jugador actual
 
@@ -115,13 +109,10 @@ public class pantallaJuegoController {
         }
     }
 
->>>>>>> Stashed changes
 
     @FXML
     private void initialize() {
         eventos.setText("¡El juego ha comenzado!");
-<<<<<<< Updated upstream
-=======
 
         if (tableroLogico == null) {
             tableroLogico = new Tablero(new java.util.ArrayList<>(), new java.util.ArrayList<>(), 0, null);
@@ -190,7 +181,6 @@ public class pantallaJuegoController {
                 tablero.getChildren().add(t);
             }
         }
->>>>>>> Stashed changes
     }
 
     // Button and menu actions
@@ -232,53 +222,168 @@ public class pantallaJuegoController {
 
     @FXML
     private void handleDado(ActionEvent event) {
-        Random rand = new Random();
-        int diceResult = rand.nextInt(6) + 1;
+        tirarDado();
+    }
 
-        // Update the Text
-        dadoResultText.setText("Ha salido: " + diceResult);
+    private void tirarDado() {
+        // Mostrar un cuadro de diálogo para elegir el tipo de dado
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Tirar dado");
+        alert.setHeaderText("Elige el tipo de dado que quieres tirar:");
+        alert.setContentText("Selecciona una opción:");
 
-        // Move the current player
-        movePlayer(currentPlayer, diceResult);
+        ButtonType buttonNormal = new ButtonType("Dado Normal");
+        ButtonType buttonEspecial = new ButtonType("Dado Especial");
+        ButtonType buttonCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        // Switch to the next player's turn
-        currentPlayer = (currentPlayer + 1) % 4; // Cycle through players 0 to 3
-        eventos.setText("Turno del jugador " + (currentPlayer + 1));
+        alert.getButtonTypes().setAll(buttonNormal, buttonEspecial, buttonCancel);
+
+        // Obtener la elección del jugador
+        ButtonType result = alert.showAndWait().orElse(buttonCancel);
+
+        int resultado;
+        if (result == buttonNormal) {
+            // Tirar dado normal
+            resultado = (int) (Math.random() * 6) + 1; // Dado normal: 1-6
+        } else if (result == buttonEspecial) {
+            // Verificar si el jugador tiene dados especiales
+            if (jugadores[currentPlayer].getInv().contarItemsPorNombre("Dado Especial") > 0) {
+                // Mostrar una lista de los dados especiales disponibles
+                Alert elegirDado = new Alert(Alert.AlertType.CONFIRMATION);
+                elegirDado.setTitle("Elegir Dado Especial");
+                elegirDado.setHeaderText("Selecciona un dado especial para tirar:");
+                elegirDado.setContentText("Selecciona una opción:");
+
+                ButtonType dadoRapido = new ButtonType("Dado Rápido");
+                ButtonType dadoLento = new ButtonType("Dado Lento");
+                ButtonType buttonCancelEspecial = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                elegirDado.getButtonTypes().setAll(dadoRapido, dadoLento, buttonCancelEspecial);
+
+                ButtonType dadoElegido = elegirDado.showAndWait().orElse(buttonCancelEspecial);
+
+                if (dadoElegido == dadoRapido) {
+                    resultado = (int) (Math.random() * 6) + 5; // Dado rápido: 5-10
+                    jugadores[currentPlayer].getInv().quitarItem(new Item("Dado Especial", 1)); // Consumir un dado especial
+                } else if (dadoElegido == dadoLento) {
+                    resultado = (int) (Math.random() * 5) + 1; // Dado lento: 1-5
+                    jugadores[currentPlayer].getInv().quitarItem(new Item("Dado Especial", 1)); // Consumir un dado especial
+                } else {
+                    // Cancelar
+                    return;
+                }
+            } else {
+                mostrarAlerta("Inventario vacío", "No tienes dados especiales disponibles.");
+                return;
+            }
+        } else {
+            // Cancelar
+            return;
+        }
+
+        dadoResultText.setText("Ha salido: " + resultado);
+
+        // Mover al jugador actual
+        movePlayer(currentPlayer, resultado);
+
+        // Cambiar al siguiente jugador
+        currentPlayer = (currentPlayer + 1) % jugadores.length;
     }
 
     private void movePlayer(int playerIndex, int steps) {
         playerPositions[playerIndex] += steps;
 
-        // Bound player position
-        if (playerPositions[playerIndex] >= 50) {
-            playerPositions[playerIndex] = 49; // Limit to the last cell
+        // Limitar la posición del jugador al tamaño del tablero
+        int totalCells = 50;
+        if (playerPositions[playerIndex] >= totalCells) {
+            playerPositions[playerIndex] = totalCells - 1;
         }
 
-        // Check row and column
+        // --- EFECTOS DE CASILLAS ESPECIALES ---
+        Casilla casilla = tableroLogico.getCasillas().get(playerPositions[playerIndex]);
+        Pinguino jugador = jugadores[playerIndex];
+
+        if (casilla instanceof Oso) {
+            eventos.setText("¡" + jugador.getNombre() + " ha sido atacado por el oso y vuelve al inicio!");
+            playerPositions[playerIndex] = 0;
+        } else if (casilla instanceof Agujero) {
+            // Buscar el agujero anterior
+            int posActual = playerPositions[playerIndex];
+            int posForatAnterior = 0;
+            for (int i = posActual - 1; i >= 0; i--) {
+                if (tableroLogico.getCasillas().get(i) instanceof Agujero) {
+                    posForatAnterior = i;
+                    break;
+                }
+            }
+            eventos.setText("¡" + jugador.getNombre() + " ha caído en un agujero y retrocede al anterior!");
+            playerPositions[playerIndex] = posForatAnterior;
+        } else if (casilla instanceof Trineo) {
+            // Buscar el siguiente trineo
+            int posActual = playerPositions[playerIndex];
+            int posSeguentTrineo = -1;
+            for (int i = posActual + 1; i < totalCells; i++) {
+                if (tableroLogico.getCasillas().get(i) instanceof Trineo) {
+                    posSeguentTrineo = i;
+                    break;
+                }
+            }
+            if (posSeguentTrineo == -1) {
+                // Si no hay siguiente, no se mueve
+                eventos.setText("¡" + jugador.getNombre() + " está en el último trineo!");
+            } else {
+                eventos.setText("¡" + jugador.getNombre() + " avanza al siguiente trineo!");
+                playerPositions[playerIndex] = posSeguentTrineo;
+            }
+        } else if (casilla instanceof Evento) {
+            // Evento aleatorio simple de ejemplo
+            String[] eventosPosibles = {
+                "¡Avanzas 2 casillas extra!",
+                "¡Retrocedes 2 casillas!",
+                "¡Pierdes un turno!",
+                "¡Ganas un pez!"
+            };
+            int idx = new Random().nextInt(eventosPosibles.length);
+            eventos.setText("Casilla de evento: " + eventosPosibles[idx]);
+            // Ejemplo de efecto real:
+            if (idx == 0) { // Avanza 2
+                playerPositions[playerIndex] = Math.min(playerPositions[playerIndex] + 2, totalCells - 1);
+            } else if (idx == 1) { // Retrocede 2
+                playerPositions[playerIndex] = Math.max(playerPositions[playerIndex] - 2, 0);
+            } else if (idx == 2) { // Pierde turno (puedes implementar una bandera para saltar turno)
+                // Implementa lógica de perder turno si lo deseas
+            } else if (idx == 3) { // Gana un pez
+                jugador.getInv().añadirItem(new Item("Pez", 1));
+            }
+        }
+
+        // Calcular la fila y columna en el tablero
         int row = playerPositions[playerIndex] / COLUMNS;
         int col = playerPositions[playerIndex] % COLUMNS;
 
-        // Get the player's Circle
+        // Obtener el círculo del jugador
         Circle playerCircle = getPlayerCircle(playerIndex);
 
-        // Get current row and column
-        int currentRow = GridPane.getRowIndex(playerCircle) != null ? GridPane.getRowIndex(playerCircle) : 0;
-        int currentCol = GridPane.getColumnIndex(playerCircle) != null ? GridPane.getColumnIndex(playerCircle) : 0;
+        // Obtener la fila y columna actuales
+        Integer currentRow = GridPane.getRowIndex(playerCircle);
+        Integer currentCol = GridPane.getColumnIndex(playerCircle);
+        if (currentRow == null) currentRow = 0;
+        if (currentCol == null) currentCol = 0;
 
-        // Calculate pixel offsets for animation
-        double offsetX = (col - currentCol) * tablero.getWidth() / COLUMNS;
-        double offsetY = (row - currentRow) * tablero.getHeight() / (50 / COLUMNS);
+        // Calcular desplazamiento en píxeles
+        double offsetX = (col - currentCol) * (tablero.getWidth() / COLUMNS);
+        double offsetY = (row - currentRow) * (tablero.getHeight() / tablero.getRowConstraints().size());
 
-        // Create a TranslateTransition for smooth movement
+        // Crear una transición para mover al jugador
         TranslateTransition transition = new TranslateTransition(Duration.millis(500), playerCircle);
         transition.setByX(offsetX);
         transition.setByY(offsetY);
 
-        // After the animation, update the GridPane position
+        // Actualizar la posición en el GridPane al finalizar la animación
         transition.setOnFinished(event -> {
             GridPane.setRowIndex(playerCircle, row);
             GridPane.setColumnIndex(playerCircle, col);
-            playerCircle.setTranslateX(0); // Reset translation
+            playerCircle.setTranslateX(0);
             playerCircle.setTranslateY(0);
         });
 
@@ -321,24 +426,15 @@ public class pantallaJuegoController {
 
     @FXML
     private void handleInventario() {
-        // Suponiendo que el jugador actual es un Pinguino
-        Pinguino jugadorActual = obtenerJugadorActual(); // Implementa este método según tu lógica
+        Pinguino jugadorActual = jugadores[currentPlayer];
         if (jugadorActual != null) {
             StringBuilder inventarioTexto = new StringBuilder();
-<<<<<<< Updated upstream
-            if (jugadorActual.getInv().getLista().isEmpty()) {
-                inventarioTexto.append("El inventario está vacío.");
-            } else {
-                inventarioTexto.append("Inventario:\n");
-                jugadorActual.getInv().getLista().forEach(item -> {
-=======
             inventarioTexto.append("Inventario de ").append(jugadorActual.getNombre()).append(":\n\n");
 
             if (jugadorActual.getInv().getItems().isEmpty()) {
                 inventarioTexto.append("El inventario está vacío.");
             } else {
                 jugadorActual.getInv().getItems().forEach(item -> {
->>>>>>> Stashed changes
                     inventarioTexto.append("- ").append(item.getNombre())
                             .append(" (Cantidad: ").append(item.getCantidad()).append(")\n");
                 });
@@ -355,13 +451,6 @@ public class pantallaJuegoController {
         }
     }
 
-<<<<<<< Updated upstream
-    private Pinguino obtenerJugadorActual() {
-        // Implementa la lógica para obtener el jugador actual
-        // Por ejemplo, si tienes un objeto Tablero que gestiona los turnos:
-        // return (Pinguino) tablero.getJugadorActual();
-        return null; // Cambia esto por la lógica real
-=======
     @FXML
     private void handleBolaDeNieve(ActionEvent event) {
         Pinguino jugador = jugadores[currentPlayer];
@@ -392,7 +481,6 @@ public class pantallaJuegoController {
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
->>>>>>> Stashed changes
     }
 
     public void setTablero(Tablero tablero) {

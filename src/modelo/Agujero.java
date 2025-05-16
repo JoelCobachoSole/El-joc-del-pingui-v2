@@ -6,19 +6,10 @@ import java.util.ArrayList;
 public class Agujero extends Casilla implements Serializable {
     private static final long serialVersionUID = 1L;
 
-	public Agujero(int posicion, ArrayList<Jugador> jugadoresActuales) {
-		super(posicion, jugadoresActuales);
-	}
+    public Agujero(int posicion, ArrayList<Jugador> jugadoresActuales) {
+        super(posicion, jugadoresActuales);
+    }
 
-	@Override
-	public void realizarAccion() {
-		// TODO Auto-generated method stub
-
-	}
-
-<<<<<<< Updated upstream
-}
-=======
     @Override
     public void realizarAccion() {
         for (Jugador j : jugadoresActuales) {
@@ -35,4 +26,3 @@ public class Agujero extends Casilla implements Serializable {
         }
     }
 }
->>>>>>> Stashed changes

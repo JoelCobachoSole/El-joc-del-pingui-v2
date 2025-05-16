@@ -6,18 +6,10 @@ import java.util.ArrayList;
 public class Trineo extends Casilla implements Serializable {
     private static final long serialVersionUID = 1L;
 
-	public Trineo(int posicion, ArrayList<Jugador> jugadoresActuales) {
-		super(posicion, jugadoresActuales);
-	}
+    public Trineo(int posicion, ArrayList<Jugador> jugadoresActuales) {
+        super(posicion, jugadoresActuales);
+    }
 
-	@Override
-	public void realizarAccion() {
-		// TODO Auto-generated method stub
-
-	}
-
-<<<<<<< Updated upstream
-=======
     @Override
     public void realizarAccion() {
         for (Jugador j : jugadoresActuales) {
@@ -48,6 +40,4 @@ public class Trineo extends Casilla implements Serializable {
             }
         }
     }
->>>>>>> Stashed changes
 }
-

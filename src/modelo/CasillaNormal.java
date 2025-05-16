@@ -12,6 +12,6 @@ public class CasillaNormal extends Casilla implements Serializable {
 
     @Override
     public void realizarAccion() {
-        // No realiza ninguna acciÃ³n especial TODO revisar
+        // No realiza ninguna acción especial TODO revisar
     }
 }

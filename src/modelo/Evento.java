@@ -8,38 +8,10 @@ public class Evento extends Casilla implements Serializable {
 
     private String tipo;
 
-<<<<<<< Updated upstream
-	@Override
-	public void realizarAccion() {
-		for (Jugador j : jugadoresActuales) {
-			if (j instanceof Pinguino) {
-				Random ran = new Random();
-				int pos = ran.nextInt(6);
-
-				if (eventos[pos].equals("pez")) {
-
-				} else if (eventos[pos].equals("bolas")) {
-
-				} else if (eventos[pos].equals("rapido")) {
-
-				} else if (eventos[pos].equals("lento")) {
-
-				} else if (eventos[pos].equals("pierdeTurno")) {
-
-				} else if (eventos[pos].equals("pierdeItem")) {
-
-				} else if (eventos[pos].equals("motos")) {
-
-				}
-			}
-		}
-	}
-=======
     public Evento(int posicion, ArrayList<Jugador> jugadoresActuales, String tipo) {
         super(posicion, jugadoresActuales);
         this.tipo = tipo;
     }
->>>>>>> Stashed changes
 
     @Override
     public void realizarAccion() {

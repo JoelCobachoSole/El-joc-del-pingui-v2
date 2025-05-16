@@ -27,7 +27,7 @@ public class JugadorDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Error en findByNombre(): " + e.getMessage());
+            System.err.println("❌ Error en findByNombre(): " + e.getMessage());
         }
         return null;
     }
@@ -47,7 +47,7 @@ public class JugadorDAO {
             return true;
 
         } catch (SQLException e) {
-            System.err.println("Error en insertNewUser(): " + e.getMessage());
+            System.err.println("❌ Error en insertNewUser(): " + e.getMessage());
             return false;
         }
     }
@@ -68,7 +68,7 @@ public class JugadorDAO {
             return rows > 0;
 
         } catch (SQLException e) {
-            System.err.println("Error en updateJugador(): " + e.getMessage());
+            System.err.println("❌ Error en updateJugador(): " + e.getMessage());
             return false;
         }
     }

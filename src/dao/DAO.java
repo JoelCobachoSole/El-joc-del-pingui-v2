@@ -3,7 +3,7 @@ package dao;
 import java.util.List;
 
 /*
- * Interfaz genÃ©rica para operaciones CRUD (Crear, Leer, Actualizar, Eliminar).
+ * Interfaz genérica para operaciones CRUD (Crear, Leer, Actualizar, Eliminar).
  * Se usa con cualquier tipo de entidad (T), como Jugador, Item, etc.
  */
 
