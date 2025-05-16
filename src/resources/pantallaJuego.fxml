@@ -77,62 +77,30 @@
                               <Font size="32.0" />
                            </font>
                         </Text>
-                        <Button fx:id="dado" layoutX="181.0" layoutY="81.0" mnemonicParsing="false" onAction="#handleDado" text="Dado" AnchorPane.leftAnchor="181.0" AnchorPane.topAnchor="81.0">
+                        <Button fx:id="dado" layoutX="200.0" layoutY="80.0" mnemonicParsing="false" onAction="#handleDado" text="Dado" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="80.0">
                            <font>
                               <Font size="25.0" />
                            </font>
                         </Button>
-                        <Button fx:id="botonInventario" layoutX="87.0" layoutY="14.0" onAction="#handleInventario" text="Inventario" AnchorPane.bottomAnchor="142.66666666666666" AnchorPane.leftAnchor="87.0">
-                           <font>
-                              <Font size="20.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="bolaDeNieve" layoutX="200.0" layoutY="150.0" mnemonicParsing="false" onAction="#handleBolaDeNieve" text="Usar Bola de Nieve" />
-                        <Button fx:id="subornarOso" layoutX="200.0" layoutY="200.0" mnemonicParsing="false" onAction="#handleSubornarOso" text="Subornar Oso" />
                      </children>
                   </AnchorPane>
                   <ScrollPane minHeight="200.0" minWidth="680.0" vbarPolicy="NEVER">
                     <content>
                       <AnchorPane>
                            <children>
-                              <Text fx:id="rapido_t" strokeType="OUTSIDE" strokeWidth="0.0" text="Dado rápido: 0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="30.0">
+                              <Button fx:id="botonInventario" layoutX="-1.0" layoutY="63.0" onAction="#handleInventario" prefHeight="200.0" prefWidth="230.0" text="Inventario" AnchorPane.bottomAnchor="-2.0" AnchorPane.leftAnchor="-1.0">
                                  <font>
-                                    <Font size="30.0" />
-                                 </font>
-                              </Text>
-                              <Text fx:id="lento_t" strokeType="OUTSIDE" strokeWidth="0.0" text="Dado lento: 0" AnchorPane.leftAnchor="250.0" AnchorPane.topAnchor="30.0">
-                                 <font>
-                                    <Font size="30.0" />
-                                 </font>
-                              </Text>
-                              <Text fx:id="peces_t" strokeType="OUTSIDE" strokeWidth="0.0" text="Peces: 0" AnchorPane.leftAnchor="500.0" AnchorPane.topAnchor="30.0">
-                                 <font>
-                                    <Font size="30.0" />
-                                 </font>
-                              </Text>
-                              <Text fx:id="nieve_t" strokeType="OUTSIDE" strokeWidth="0.0" text="Bolas de nieve: 0" AnchorPane.leftAnchor="750.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="30.0">
-                                 <font>
-                                    <Font size="30.0" />
-                                 </font>
-                              </Text>
-                              <Button fx:id="rapido" mnemonicParsing="false" text="Usar" AnchorPane.leftAnchor="55.0" AnchorPane.topAnchor="90.0">
-                                 <font>
-                                    <Font size="30.0" />
+                                    <Font size="32.0" />
                                  </font>
                               </Button>
-                              <Button fx:id="lento" layoutX="65.0" layoutY="100.0" mnemonicParsing="false" text="Usar" AnchorPane.leftAnchor="290.0" AnchorPane.topAnchor="90.0">
+                              <Button fx:id="bolaDeNieve" layoutX="228.0" mnemonicParsing="false" onAction="#handleBolaDeNieve" prefHeight="197.0" prefWidth="202.0" text="Usar Bola de Nieve">
                                  <font>
-                                    <Font size="30.0" />
+                                    <Font size="18.0" />
                                  </font>
                               </Button>
-                              <Button fx:id="peces" layoutX="75.0" layoutY="110.0" mnemonicParsing="false" text="Usar" AnchorPane.leftAnchor="505.0" AnchorPane.topAnchor="90.0">
+                              <Button fx:id="subornarOso" layoutX="430.0" mnemonicParsing="false" onAction="#handleSubornarOso" prefHeight="198.0" prefWidth="248.0" text="Subornar Oso">
                                  <font>
-                                    <Font size="30.0" />
-                                 </font>
-                              </Button>
-                              <Button fx:id="nieve" layoutX="85.0" layoutY="120.0" mnemonicParsing="false" text="Usar" AnchorPane.leftAnchor="810.0" AnchorPane.topAnchor="90.0">
-                                 <font>
-                                    <Font size="30.0" />
+                                    <Font size="31.0" />
                                  </font>
                               </Button>
                            </children>
@@ -188,10 +156,19 @@
                         <Font size="30.0" />
                      </font>
                   </Text>
-                  <Circle fx:id="P1" fill="BLUE" radius="15.0" stroke="BLACK" strokeType="INSIDE" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-                  <Circle fx:id="P2" fill="RED" radius="15.0" stroke="BLACK" strokeType="INSIDE" GridPane.rowIndex="0" GridPane.columnIndex="1" />
-                  <Circle fx:id="P3" fill="GREEN" radius="15.0" stroke="BLACK" strokeType="INSIDE" GridPane.rowIndex="0" GridPane.columnIndex="2" />
-                  <Circle fx:id="P4" fill="YELLOW" radius="15.0" stroke="BLACK" strokeType="INSIDE" GridPane.rowIndex="0" GridPane.columnIndex="3" />
+                  <Circle fx:id="P1" fill="BLUE" radius="15.0" stroke="BLACK" strokeType="INSIDE" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                  <Circle fx:id="P2" fill="RED" radius="15.0" stroke="BLACK" strokeType="INSIDE">
+                     <GridPane.margin>
+                        <Insets left="30.0" />
+                     </GridPane.margin></Circle>
+                  <Circle fx:id="P3" fill="GREEN" radius="15.0" stroke="BLACK" strokeType="INSIDE">
+                     <GridPane.margin>
+                        <Insets left="65.0" />
+                     </GridPane.margin></Circle>
+                  <Circle fx:id="P4" fill="YELLOW" radius="15.0" stroke="BLACK" strokeType="INSIDE">
+                     <GridPane.margin>
+                        <Insets left="100.0" />
+                     </GridPane.margin></Circle>
                </children>
             </GridPane>
          </top>
